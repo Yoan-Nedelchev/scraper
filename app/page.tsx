@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
+import moment from "moment";
 export default function Home() {
   const [numberOfPages, setNumberOfPages] = useState<string>("");
   const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const gridApiRef = useRef(null);
 
   const handleClick = () => {
     const fetchData = async () => {
@@ -113,6 +115,20 @@ export default function Home() {
     },
   ];
 
+  const onGridReady = (params) => {
+    gridApiRef.current = params.api;
+  };
+
+  const exportToCsv = () => {
+    if (gridApiRef.current) {
+      gridApiRef.current.exportDataAsCsv({
+        fileName: `${moment().format("DD_MM_YY-HH_mm")}`, // Set the filename
+        columnSeparator: ",", // Set the column separator (default is comma)
+        // Add other options as needed
+      });
+    }
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <div
@@ -121,6 +137,20 @@ export default function Home() {
       >
         <span>Брой страници: {numberOfPages ? numberOfPages : 0}</span>
         <span>Брой записи: {rows.length}</span>
+        <div>
+          <button
+            onClick={exportToCsv}
+            style={{
+              border: "1px solid white",
+              padding: "2px 8px",
+              borderRadius: "4px",
+              alignSelf: "flex-end",
+              fontSize: "0.8rem",
+            }}
+          >
+            CSV
+          </button>
+        </div>
         <div style={{ display: "flex", marginBottom: "20px" }}>
           <input
             type='text'
@@ -163,6 +193,7 @@ export default function Home() {
             sortable: true,
             filter: true,
           }}
+          onGridReady={onGridReady}
         />
       </div>
     </div>
