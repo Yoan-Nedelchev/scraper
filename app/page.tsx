@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -11,20 +11,28 @@ export default function Home() {
   const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const gridApiRef = useRef(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleClick = () => {
-    const fetchData = async () => {
-      const encodedURI = encodeURIComponent(inputValue);
-      const response = await fetch(`/api/scrape?url=${encodedURI}`);
-      const data = await response.json();
-      setNumberOfPages(data.numberOfPages || "Unknown");
-      setRows(data.rows || []);
-    };
-    fetchData();
-    setInputValue("");
-    setNumberOfPages("");
-    setRows([]);
+    if (inputValue !== "") {
+      setLoading(true);
+      const fetchData = async () => {
+        const encodedURI = encodeURIComponent(inputValue);
+        const response = await fetch(`/api/scrape?url=${encodedURI}`);
+        const data = await response.json();
+        setNumberOfPages(data.numberOfPages || "Unknown");
+        setRows(data.rows || []);
+        setLoading(false);
+      };
+      fetchData();
+      setInputValue("");
+      setNumberOfPages("");
+      setRows([]);
+    }
   };
+  useEffect(() => {
+    console.log(loading);
+  }, [loading]);
 
   const columnDefs: ColDef[] = [
     {
@@ -262,7 +270,7 @@ export default function Home() {
               alignSelf: "flex-end",
             }}
           >
-            Потвърди
+            {loading ? "Изчакай..." : "Потвърди"}
           </button>
         </div>
       </div>
@@ -280,6 +288,9 @@ export default function Home() {
           }}
           onGridReady={onGridReady}
           onCellValueChanged={onCellValueChanged}
+          overlayNoRowsTemplate={
+            "<span class='custom-loading'>Моля, въведи валиден URL</span>"
+          }
         />
       </div>
     </div>
