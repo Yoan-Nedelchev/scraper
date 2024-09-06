@@ -84,7 +84,6 @@ export default function Home() {
         padding: "10px",
       },
     },
-
     {
       headerName: "Линк 2",
       field: "lnk2",
@@ -119,12 +118,49 @@ export default function Home() {
     gridApiRef.current = params.api;
   };
 
+  const extractUrlFromHtml = (html) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const anchor = doc.querySelector("a");
+    return anchor ? anchor.href : "";
+  };
+  const extractUrlFromImg = (html) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const img = doc.querySelector("img");
+    return img ? img.src : "";
+  };
+
+  const extractTextFromHtml = (html) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const anchor = doc.querySelector("a");
+    return anchor ? anchor.innerText : "";
+  };
+
   const exportToCsv = () => {
     if (gridApiRef.current) {
       gridApiRef.current.exportDataAsCsv({
-        fileName: `${moment().format("DD_MM_YY-HH_mm")}`, // Set the filename
-        columnSeparator: ",", // Set the column separator (default is comma)
-        // Add other options as needed
+        processCellCallback: (params) => {
+          if (params.column.getColId() === "image") {
+            return extractUrlFromImg(params.value);
+          }
+          if (params.column.getColId() === "lnk1") {
+            return extractTextFromHtml(params.value);
+          }
+          if (params.column.getColId() === "lnk2") {
+            return extractUrlFromHtml(params.value);
+          }
+          return params.value;
+        },
+        processHeaderCallback: (params) => {
+          if (params.column.getColId() === "lnk1") {
+            return "Type";
+          }
+          return params.column.getColDef().headerName;
+        },
+        fileName: `${moment().format("DD_MM_YY-HH_mm")}.csv`,
+        columnSeparator: ",",
       });
     }
   };
