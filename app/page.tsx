@@ -35,7 +35,7 @@ export default function Home() {
       width: 30,
     },
     {
-      headerName: "Изображение",
+      headerName: "Снимка",
       field: "image",
       cellRenderer: (params: ICellRendererParams) => {
         return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
@@ -48,6 +48,7 @@ export default function Home() {
         padding: "10px",
       },
       filter: false,
+      suppressMovable: true,
     },
     {
       headerName: "Цена",
@@ -59,9 +60,6 @@ export default function Home() {
         }),
       sortable: true,
       filter: "agNumberColumnFilter",
-      filterParams: {
-        defaultOption: "inRange",
-      },
       width: 110,
       cellStyle: {
         "white-space": "normal",
@@ -69,9 +67,15 @@ export default function Home() {
         "line-height": "1.4",
         padding: "10px",
       },
+      suppressMovable: true,
+      filterParams: {
+        applyMiniFilterWhileTyping: true,
+        buttons: ["apply", "reset"],
+        defaultOption: "inRange",
+      },
     },
     {
-      headerName: "Линк 1",
+      headerName: "Тип",
       field: "lnk1",
       cellRenderer: (params: ICellRendererParams) => {
         return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
@@ -83,23 +87,33 @@ export default function Home() {
         "line-height": "1.4",
         padding: "10px",
       },
+      suppressMovable: true,
+      filterParams: {
+        applyMiniFilterWhileTyping: true,
+        buttons: ["reset"],
+      },
     },
     {
-      headerName: "Линк 2",
+      headerName: "Локация",
       field: "lnk2",
       cellRenderer: (params: ICellRendererParams) => {
         return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
       },
-      width: 100,
+      width: 110,
       cellStyle: {
         "white-space": "normal",
         "word-wrap": "break-word",
         "line-height": "1.4",
         padding: "10px",
       },
+      suppressMovable: true,
+      filterParams: {
+        applyMiniFilterWhileTyping: true,
+        buttons: ["reset"],
+      },
     },
     {
-      headerName: "Допълнителна информация",
+      headerName: "Доп. информация",
       field: "additionalData",
       cellRenderer: (params: ICellRendererParams) => {
         return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
@@ -111,6 +125,30 @@ export default function Home() {
         padding: "10px",
       },
       autoHeight: true,
+      suppressMovable: true,
+      filterParams: {
+        applyMiniFilterWhileTyping: true,
+        buttons: ["reset"],
+      },
+    },
+    {
+      headerName: "Коментари",
+      field: "comments",
+      editable: true,
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+      autoHeight: true,
+      cellEditor: "agLargeTextCellEditor",
+      suppressMovable: true,
+      filter: "agSetColumnFilter",
+      filterParams: {
+        applyMiniFilterWhileTyping: true,
+        buttons: ["reset"],
+      },
     },
   ];
 
@@ -163,6 +201,17 @@ export default function Home() {
         columnSeparator: ",",
       });
     }
+  };
+
+  const onCellValueChanged = (params) => {
+    console.log("Cell value changed:", params);
+
+    const { colDef, data, newValue } = params;
+
+    // Update the specific row using applyTransaction()
+    gridApiRef.current.applyTransaction({
+      update: [{ ...data, [colDef.field]: newValue }],
+    });
   };
 
   return (
@@ -230,6 +279,7 @@ export default function Home() {
             filter: true,
           }}
           onGridReady={onGridReady}
+          onCellValueChanged={onCellValueChanged}
         />
       </div>
     </div>
