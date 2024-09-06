@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -30,9 +30,6 @@ export default function Home() {
       setRows([]);
     }
   };
-  useEffect(() => {
-    console.log(loading);
-  }, [loading]);
 
   const columnDefs: ColDef[] = [
     {
@@ -212,10 +209,7 @@ export default function Home() {
   };
 
   const onCellValueChanged = (params) => {
-    console.log("Cell value changed:", params);
-
     const { colDef, data, newValue } = params;
-
     // Update the specific row using applyTransaction()
     gridApiRef.current.applyTransaction({
       update: [{ ...data, [colDef.field]: newValue }],
