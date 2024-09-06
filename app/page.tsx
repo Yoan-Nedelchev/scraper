@@ -56,7 +56,10 @@ export default function Home() {
           currency: "EUR",
         }),
       sortable: true,
-      filter: true,
+      filter: "agNumberColumnFilter",
+      filterParams: {
+        defaultOption: "inRange",
+      },
       width: 110,
       cellStyle: {
         "white-space": "normal",
