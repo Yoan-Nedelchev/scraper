@@ -70,8 +70,6 @@ export async function GET(req) {
       numberOfPages: "1",
     };
 
-    console.log("basehere", baseUrl);
-
     const delay = (ms) => {
       return new Promise((resolve) => setTimeout(resolve, ms));
     };
@@ -101,7 +99,6 @@ export async function GET(req) {
     };
 
     await fetchData();
-    console.log(allData);
 
     return NextResponse.json(allData);
   } catch (error) {
