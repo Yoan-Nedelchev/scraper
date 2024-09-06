@@ -26,6 +26,8 @@ export default function Home() {
     };
     fetchData();
     setInputValue("");
+    setNumberOfPages("");
+    setRows([]);
   };
 
   return (
