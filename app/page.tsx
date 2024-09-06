@@ -1,19 +1,13 @@
-"use client"; // Add this directive to mark the component as a Client Component
+"use client";
 
-import { useState } from "react";
-
-interface TableRow {
-  image: string;
-  lnk1: string;
-  lnk2: string;
-  additionalData: string;
-  price: number;
-  index: number;
-}
-
+import React, { useState } from "react";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 export default function Home() {
   const [numberOfPages, setNumberOfPages] = useState<string>("");
-  const [rows, setRows] = useState<TableRow[]>([]);
+  const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
   const handleClick = () => {
@@ -30,24 +24,101 @@ export default function Home() {
     setRows([]);
   };
 
+  const columnDefs: ColDef[] = [
+    {
+      headerName: "№",
+      field: "index",
+      sortable: true,
+      filter: false,
+      width: 30,
+    },
+    {
+      headerName: "Изображение",
+      field: "image",
+      cellRenderer: (params: ICellRendererParams) => {
+        return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
+      },
+      autoHeight: true,
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+      filter: false,
+    },
+    {
+      headerName: "Цена",
+      field: "price",
+      valueFormatter: (params) =>
+        params.value.toLocaleString("en-US", {
+          style: "currency",
+          currency: "EUR",
+        }),
+      sortable: true,
+      filter: true,
+      width: 110,
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+    },
+    {
+      headerName: "Линк 1",
+      field: "lnk1",
+      cellRenderer: (params: ICellRendererParams) => {
+        return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
+      },
+      width: 90,
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+    },
+
+    {
+      headerName: "Линк 2",
+      field: "lnk2",
+      cellRenderer: (params: ICellRendererParams) => {
+        return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
+      },
+      width: 100,
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+    },
+    {
+      headerName: "Допълнителна информация",
+      field: "additionalData",
+      cellRenderer: (params: ICellRendererParams) => {
+        return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
+      },
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+      autoHeight: true,
+    },
+  ];
+
   return (
     <div style={{ padding: "40px" }}>
       <div
         className='generalInfoContainer'
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 4,
-        }}
+        style={{ display: "flex", flexDirection: "column", gap: 4 }}
       >
         <span>Брой страници: {numberOfPages ? numberOfPages : 0}</span>
         <span>Брой записи: {rows.length}</span>
-        <div
-          style={{
-            display: "flex",
-            marginBottom: "20px",
-          }}
-        >
+        <div style={{ display: "flex", marginBottom: "20px" }}>
           <input
             type='text'
             value={inputValue}
@@ -77,112 +148,20 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <table style={{ borderCollapse: "collapse", width: "100%" }}>
-        <thead>
-          <tr>
-            <th
-              style={{
-                border: "1px solid white",
-                padding: "8px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              №
-            </th>
-            <th
-              style={{
-                border: "1px solid white",
-                padding: "8px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              Изображение
-            </th>
-            <th
-              style={{
-                border: "1px solid white",
-                padding: "8px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              Цена
-            </th>
-            <th
-              style={{
-                border: "1px solid white",
-                padding: "8px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              Линк 1
-            </th>
-            <th
-              style={{
-                border: "1px solid white",
-                padding: "8px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              Линк 2
-            </th>
-            <th
-              style={{
-                border: "1px solid white",
-                padding: "8px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              Допълнителна информация
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              <td
-                style={{
-                  border: "1px solid white",
-                  padding: "8px",
-                  textAlign: "center",
-                }}
-                dangerouslySetInnerHTML={{ __html: row.index || "" }}
-              />
-              <td
-                style={{
-                  border: "1px solid white",
-                  padding: "8px",
-                  textAlign: "center",
-                }}
-                dangerouslySetInnerHTML={{ __html: row.image || "" }}
-              />
-              <td style={{ border: "1px solid white", padding: "8px" }}>
-                {row.price.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "EUR",
-                })}
-              </td>
-              <td
-                style={{ border: "1px solid white", padding: "8px" }}
-                dangerouslySetInnerHTML={{ __html: row.lnk1 }}
-              />
-              <td
-                style={{ border: "1px solid white", padding: "8px" }}
-                dangerouslySetInnerHTML={{ __html: row.lnk2 }}
-              />
-              <td
-                style={{ border: "1px solid white", padding: "8px" }}
-                dangerouslySetInnerHTML={{ __html: row.additionalData }}
-              />
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      <div className='ag-theme-alpine' style={{ height: 400, width: "100%" }}>
+        <AgGridReact
+          rowData={rows}
+          // @ts-expect-error there is an issue with the types, but works OK
+          columnDefs={columnDefs}
+          domLayout='autoHeight'
+          defaultColDef={{
+            resizable: true,
+            sortable: true,
+            filter: true,
+          }}
+        />
+      </div>
     </div>
   );
 }
