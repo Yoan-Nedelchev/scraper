@@ -38,8 +38,14 @@ async function fetchPage(url) {
 
   // Map the NodeLists to arrays of HTML strings
   const images = Array.from(imageElements).map((el) => el.outerHTML);
-  const lnk1Html = Array.from(lnk1Elements).map((el) => el.outerHTML);
-  const lnk2Html = Array.from(lnk2Elements).map((el) => el.outerHTML);
+  const lnk1Html = Array.from(lnk1Elements).map((el) => {
+    el.setAttribute("target", "_blank");
+    return el.outerHTML;
+  });
+  const lnk2Html = Array.from(lnk2Elements).map((el) => {
+    el.setAttribute("target", "_blank");
+    el.outerHTML;
+  });
   const additionalDataHtml = Array.from(additionalDataElements).map((el) =>
     el.innerHTML.trim()
   );
