@@ -78,8 +78,9 @@ export async function GET(req) {
 
     const fetchData = async () => {
       while (true) {
-        const pageUrl = `${baseUrl}${currentPage}`;
+        const pageUrl = `${baseUrl}=${currentPage}`;
         const pageData = await fetchPage(pageUrl);
+        console.log("urlhere", pageUrl);
 
         const rows = pageData.prices.map((price, index) => ({
           image: pageData.images[index],
@@ -106,6 +107,7 @@ export async function GET(req) {
     };
 
     await fetchData();
+    console.log(allData);
 
     return NextResponse.json(allData);
   } catch (error) {
