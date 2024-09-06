@@ -80,20 +80,15 @@ export async function GET(req) {
       while (true) {
         const pageUrl = `${baseUrl}=${currentPage}`;
         const pageData = await fetchPage(pageUrl);
-        console.log("urlhere", pageUrl);
-
         const rows = pageData.prices.map((price, index) => ({
-          image: pageData.images[index],
+          image: pageData.images[index + 2],
           lnk1: pageData.lnk1Html[index],
           lnk2: pageData.lnk2Html[index],
           additionalData: pageData.additionalDataHtml[index],
           price: price,
         }));
-
         allData.rows.push(...rows);
-
         if (currentPage >= parseInt(pageData.numberOfPages)) break;
-
         currentPage++;
         await delay(5000);
       }
@@ -102,7 +97,6 @@ export async function GET(req) {
         .map((currentRow) => {
           return { ...currentRow, index: counter++ };
         });
-
       allData.numberOfPages = currentPage.toString();
     };
 
