@@ -2,6 +2,52 @@ import { NextResponse } from "next/server";
 import jsdom from "jsdom";
 import iconv from "iconv-lite";
 
+const SUBWAY_ARRAY = [
+  "младост",
+  "дървеница",
+  "дианабад",
+  "дружба",
+  "изгрев",
+  "изток",
+  "лозенец",
+  "хладилника",
+  "кръстова",
+  "център",
+  "зона",
+  "разсадника",
+  "света троица",
+  "люлин",
+  "фондови",
+  "връбница",
+  "надежда",
+  "триъгълника",
+  "обеля",
+  "студентски",
+  "сердика",
+  "илинден",
+  "западен парк",
+  "гевгелийски",
+  "медицинска академия",
+  "красно",
+  "овча",
+  "хиподрума",
+  "лагера",
+  "славия",
+  "стрелбище",
+  "свобода",
+  "толстой",
+  "хаджи",
+  "вазов",
+  "яворов",
+  "сухата",
+  "оборище",
+  "подуяне",
+  "летище",
+  "искър",
+  "горна",
+  "банишора",
+];
+
 async function fetchPage(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch the page");
@@ -44,7 +90,7 @@ async function fetchPage(url) {
   });
   const lnk2Html = Array.from(lnk2Elements).map((el) => {
     el.setAttribute("target", "_blank");
-    el.outerHTML;
+    return el.outerHTML;
   });
   const additionalDataHtml = Array.from(additionalDataElements).map((el) =>
     el.innerHTML.trim()
@@ -90,6 +136,13 @@ export async function GET(req) {
           lnk2: pageData.lnk2Html[index],
           additionalData: pageData.additionalDataHtml[index],
           price: price,
+          subway: SUBWAY_ARRAY.some((subwayItem) =>
+            pageData.lnk2Html[index]
+              .toLowerCase()
+              .includes(subwayItem.toLowerCase())
+          )
+            ? "да"
+            : "провери",
         }));
         allData.rows.push(...rows);
         if (currentPage >= parseInt(pageData.numberOfPages)) break;
@@ -105,7 +158,6 @@ export async function GET(req) {
     };
 
     await fetchData();
-
     return NextResponse.json(allData);
   } catch (error) {
     console.error("Error occurred while scraping:", error);

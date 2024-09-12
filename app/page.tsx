@@ -118,6 +118,25 @@ export default function Home() {
       },
     },
     {
+      headerName: "Метро",
+      field: "subway",
+      cellRenderer: (params: ICellRendererParams) => {
+        return <span dangerouslySetInnerHTML={{ __html: params.value }} />;
+      },
+      width: 110,
+      cellStyle: {
+        "white-space": "normal",
+        "word-wrap": "break-word",
+        "line-height": "1.4",
+        padding: "10px",
+      },
+      suppressMovable: true,
+      filterParams: {
+        applyMiniFilterWhileTyping: true,
+        buttons: ["reset"],
+      },
+    },
+    {
       headerName: "Доп. информация",
       field: "additionalData",
       cellRenderer: (params: ICellRendererParams) => {
@@ -155,6 +174,12 @@ export default function Home() {
         buttons: ["reset"],
       },
     },
+    {
+      headerName: "Линк",
+      field: "lnk1",
+      hide: true,
+      valueGetter: (params) => extractUrlFromHtml(params.data.lnk1),
+    },
   ];
 
   const onGridReady = (params) => {
@@ -167,6 +192,7 @@ export default function Home() {
     const anchor = doc.querySelector("a");
     return anchor ? anchor.href : "";
   };
+
   const extractUrlFromImg = (html) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
@@ -191,19 +217,23 @@ export default function Home() {
           if (params.column.getColId() === "lnk1") {
             return extractTextFromHtml(params.value);
           }
-          if (params.column.getColId() === "lnk2") {
+          if (params.column.getColId() === "lnk1Href") {
             return extractUrlFromHtml(params.value);
+          }
+          if (params.column.getColId() === "lnk2") {
+            return extractTextFromHtml(params.value);
           }
           return params.value;
         },
         processHeaderCallback: (params) => {
           if (params.column.getColId() === "lnk1") {
-            return "Type";
+            return "Тип";
           }
           return params.column.getColDef().headerName;
         },
         fileName: `${moment().format("DD_MM_YY-HH_mm")}.csv`,
         columnSeparator: ",",
+        allColumns: true,
       });
     }
   };
