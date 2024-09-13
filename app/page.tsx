@@ -12,6 +12,7 @@ export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const gridApiRef = useRef(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [resultTypes, setResultTypes] = useState([]);
 
   const handleClick = () => {
     if (inputValue !== "") {
@@ -20,8 +21,17 @@ export default function Home() {
         const encodedURI = encodeURIComponent(inputValue);
         const response = await fetch(`/api/scrape?url=${encodedURI}`);
         const data = await response.json();
-        setNumberOfPages(data.numberOfPages || "Unknown");
-        setRows(data.rows || []);
+        setNumberOfPages(data.numberOfPages || 0);
+        setResultTypes(data.resultTypes);
+        const uniqueRows = [];
+        const existingDescriptions = new Set();
+        data.rows.forEach((item) => {
+          if (!existingDescriptions.has(item.additionalData)) {
+            uniqueRows.push(item);
+            existingDescriptions.add(item.additionalData);
+          }
+        });
+        setRows(uniqueRows || []);
         setLoading(false);
       };
       fetchData();
@@ -33,11 +43,13 @@ export default function Home() {
 
   const columnDefs: ColDef[] = [
     {
-      headerName: "№",
-      field: "index",
+      headerName: "Дата",
+      field: "date",
       sortable: true,
       filter: false,
       width: 30,
+      valueGetter: () => moment().format("DD-MM-YY"),
+      hide: true,
     },
     {
       headerName: "Снимка",
@@ -208,6 +220,16 @@ export default function Home() {
   };
 
   const exportToCsv = () => {
+    let resultTypesForFileName = "";
+    resultTypes.forEach((currentType) => {
+      let extracted = "";
+      if (resultTypesForFileName !== "") {
+        extracted += "_";
+      }
+      extracted += currentType.split(" ")[1];
+      resultTypesForFileName += extracted;
+    });
+    console.log("herehere", resultTypesForFileName);
     if (gridApiRef.current) {
       gridApiRef.current.exportDataAsCsv({
         processCellCallback: (params) => {
@@ -221,7 +243,7 @@ export default function Home() {
             return extractUrlFromHtml(params.value);
           }
           if (params.column.getColId() === "lnk2") {
-            return extractTextFromHtml(params.value);
+            return extractTextFromHtml(params.value).split(", ")[1];
           }
           return params.value;
         },
@@ -231,7 +253,9 @@ export default function Home() {
           }
           return params.column.getColDef().headerName;
         },
-        fileName: `${moment().format("DD_MM_YY-HH_mm")}.csv`,
+        fileName: `${moment().format(
+          "DD_MM-HH_mm"
+        )}ч.__${resultTypesForFileName}.csv`,
         columnSeparator: ",",
         allColumns: true,
       });
