@@ -187,7 +187,7 @@ export async function GET() {
         allData.rows.push(...rows);
         if (currentPage >= parseInt(pageData.numberOfPages)) break;
         currentPage++;
-        await delay(2000);
+        await delay(1000);
       }
       allData.rows = allData.rows
         .sort((a, b) => a.price - b.price)
