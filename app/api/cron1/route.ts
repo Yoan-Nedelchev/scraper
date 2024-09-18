@@ -190,7 +190,7 @@ export async function GET() {
         const pageUrl = `${baseUrl}=${currentPage}`;
         const pageData = await fetchPage(pageUrl);
         const rows = pageData.prices.map((price, index) => ({
-          date: moment().format("YYYY-MM-DD"),
+          date: moment().format("YYYY-MM-DD HH:mm:ss"),
           image: pageData.images[index + 2],
           lnk1: pageData.lnk1Html[index],
           lnk2: pageData.lnk2Html[index],
