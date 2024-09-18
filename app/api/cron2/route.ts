@@ -3,6 +3,7 @@ import jsdom from "jsdom";
 import iconv from "iconv-lite";
 import { createKysely } from "@vercel/postgres-kysely";
 import moment from "moment";
+import nodemailer from "nodemailer";
 
 interface RoomData {
   date: string;
@@ -82,6 +83,25 @@ export const revalidate = 0;
 export async function GET() {
   const resultsTypes = new Set();
   const url = process.env.url2;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.gmailEmail,
+      pass: process.env.gmailPassword,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.senderAddress,
+    to: process.env.receiverAddress,
+    subject: "Cron Job Completed",
+    text: "This chron job has completed",
+    html: "<h1>hello</h1>",
+  };
 
   let counter = 1;
   const lastEqualsIndex = url.lastIndexOf("=");
@@ -205,6 +225,17 @@ export async function GET() {
       writeInDB(allData.rows, "two_room_data");
     } else {
       writeInDB(allData.rows, "three_room_data");
+    }
+
+    try {
+      // Send email
+      const info = await transporter.sendMail(mailOptions);
+      console.log("Email sent: %s", info.messageId);
+
+      console.log({ message: "Email sent successfully!" });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      console.log({ error: "Failed to send email" });
     }
 
     return NextResponse.json(allData);
