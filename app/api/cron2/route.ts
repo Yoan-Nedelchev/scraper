@@ -143,18 +143,19 @@ export async function GET() {
     Array.from(lnk1Elements).forEach((el: HTMLAnchorElement) =>
       resultsTypes.add(el.innerHTML)
     );
-    const images = Array.from(imageElements).map((el: HTMLAnchorElement) => {
+    const images = Array.from(imageElements).map((el: HTMLImageElement) => {
       // Get the current href attribute
-      const href = el.getAttribute("href");
+      const src = el.getAttribute("src");
 
       // Check if href starts with "//" and prepend "https://"
-      if (href && href.startsWith("//")) {
-        el.setAttribute("href", `https:${href}`);
+      if (src && src.startsWith("//")) {
+        el.setAttribute("src", `https:${src}`);
       }
 
       // Return the modified outerHTML
       return el.outerHTML;
     });
+
     const lnk1Html = Array.from(lnk1Elements).map((el: HTMLAnchorElement) => {
       // Get the current href attribute
       const href = el.getAttribute("href");
