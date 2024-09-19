@@ -257,7 +257,7 @@ export async function GET() {
     const getRecordsForToday = async () => {
       const todayDate = moment().format("YYYY-MM-DD");
       const records = await db
-        .selectFrom("three_room_data")
+        .selectFrom("two_room_data")
         .selectAll()
         // @ts-expect-error its ok
         .where(sql`DATE("date") = ${todayDate}`)
