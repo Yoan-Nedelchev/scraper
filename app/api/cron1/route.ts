@@ -143,17 +143,50 @@ export async function GET() {
     Array.from(lnk1Elements).forEach((el: HTMLAnchorElement) =>
       resultsTypes.add(el.innerHTML)
     );
-    const images = Array.from(imageElements).map(
-      (el: HTMLAnchorElement) => el.outerHTML
-    );
+    const images = Array.from(imageElements).map((el: HTMLAnchorElement) => {
+      // Get the current href attribute
+      const href = el.getAttribute("href");
+
+      // Check if href starts with "//" and prepend "https://"
+      if (href && href.startsWith("//")) {
+        el.setAttribute("href", `https:${href}`);
+      }
+
+      // Return the modified outerHTML
+      return el.outerHTML;
+    });
     const lnk1Html = Array.from(lnk1Elements).map((el: HTMLAnchorElement) => {
+      // Get the current href attribute
+      const href = el.getAttribute("href");
+
+      // Check if href starts with "//" and prepend "https://"
+      if (href && href.startsWith("//")) {
+        el.setAttribute("href", `https:${href}`);
+      }
+
+      // Set target="_blank"
       el.setAttribute("target", "_blank");
+
+      // Return the modified outerHTML
       return el.outerHTML;
     });
+
     const lnk2Html = Array.from(lnk2Elements).map((el: HTMLAnchorElement) => {
+      // Get the current href attribute
+      const href = el.getAttribute("href");
+
+      // Check if href starts with "//" and prepend "https://"
+      if (href && href.startsWith("//")) {
+        el.setAttribute("href", `https:${href}`);
+      }
+
+      // Set target="_blank"
       el.setAttribute("target", "_blank");
+
+      // Return the modified outerHTML
       return el.outerHTML;
     });
+
     const additionalDataHtml = Array.from(additionalDataElements).map(
       (el: HTMLBaseElement) => el.innerHTML.trim()
     );
