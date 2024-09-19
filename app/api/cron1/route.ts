@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import jsdom from "jsdom";
 import iconv from "iconv-lite";
 import { createKysely } from "@vercel/postgres-kysely";
+import { sql } from "kysely";
 import moment from "moment";
 import nodemailer from "nodemailer";
 
