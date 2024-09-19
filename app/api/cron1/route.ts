@@ -255,7 +255,7 @@ export async function GET() {
     }
 
     const getRecordsForToday = async () => {
-      const todayDate = moment().add(2, "days").format("YYYY-MM-DD");
+      const todayDate = moment().add(1, "days").format("YYYY-MM-DD");
       const records = await db
         .selectFrom("three_room_data")
         .selectAll()
