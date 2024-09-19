@@ -255,7 +255,7 @@ export async function GET() {
     }
 
     const getRecordsForToday = async () => {
-      const todayDate = moment().add(1, "days").format("YYYY-MM-DD");
+      const todayDate = moment().add(2, "days").format("YYYY-MM-DD");
       const records = await db
         .selectFrom("three_room_data")
         .selectAll()
@@ -269,9 +269,10 @@ export async function GET() {
     const todayRecords = await getRecordsForToday();
 
     const generateTableHTML = (todayRecords) => {
-      const tableRows = todayRecords
-        .map((item) => {
-          return `
+      if (todayRecords.length > 0) {
+        const tableRows = todayRecords
+          .map((item) => {
+            return `
           <tr>
             <td>${item.image}</td>
             <td>${item.lnk2}</td>
@@ -279,9 +280,9 @@ export async function GET() {
             <td>${item.data}</td>
           </tr>
         `;
-        })
-        .join("");
-      return `
+          })
+          .join("");
+        return `
         <table border="1" cellpadding="10" cellspacing="0">
           <thead>
             <tr>
@@ -296,6 +297,9 @@ export async function GET() {
           </tbody>
         </table>
       `;
+      } else {
+        return "<h1>Няма нови обяви</h1>";
+      }
     };
 
     const tableHTML = generateTableHTML(todayRecords);

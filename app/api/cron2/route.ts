@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import jsdom from "jsdom";
 import iconv from "iconv-lite";
 import { createKysely } from "@vercel/postgres-kysely";
+import { sql } from "kysely";
 import moment from "moment";
 import nodemailer from "nodemailer";
 
@@ -94,14 +95,6 @@ export async function GET() {
       rejectUnauthorized: false,
     },
   });
-
-  const mailOptions = {
-    from: process.env.senderAddress,
-    to: process.env.receiverAddress,
-    subject: "Cron Job Completed",
-    text: "This chron job has completed",
-    html: "<h1>hello</h1>",
-  };
 
   let counter = 1;
   const lastEqualsIndex = url.lastIndexOf("=");
@@ -260,6 +253,63 @@ export async function GET() {
     } else {
       writeInDB(allData.rows, "three_room_data");
     }
+
+    const getRecordsForToday = async () => {
+      const todayDate = moment().format("YYYY-MM-DD");
+      const records = await db
+        .selectFrom("two_room_data")
+        .selectAll()
+        // @ts-expect-error its ok
+        .where(sql`DATE("date") = ${todayDate}`)
+        .execute();
+      console.log("newRecords", records);
+      return records;
+    };
+
+    const todayRecords = await getRecordsForToday();
+
+    const generateTableHTML = (todayRecords) => {
+      if (todayRecords.length > 0) {
+        const tableRows = todayRecords
+          .map((item) => {
+            return `
+          <tr>
+            <td>${item.image}</td>
+            <td>${item.lnk2}</td>
+            <td>${item.price} €</td>
+            <td>${item.data}</td>
+          </tr>
+        `;
+          })
+          .join("");
+        return `
+        <table border="1" cellpadding="10" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Снимка</th>
+              <th>Локация</th>
+              <th>Цена</th>
+              <th>Описание</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      `;
+      } else {
+        return "<h1>Няма нови обяви</h1>";
+      }
+    };
+
+    const tableHTML = generateTableHTML(todayRecords);
+    const mailOptions = {
+      from: '"Imot Scraper" <yoan.emilov@gmail.com>', // Sender address
+      to: "yoan.nedelchev@yahoo.com", // Receiver address
+      subject: "Cron Job Completed", // Subject
+      text: "This chron job has completed", // Plain text body
+      html: `${tableHTML}`, // HTML body
+    };
 
     try {
       // Send email
