@@ -249,9 +249,9 @@ export async function GET() {
     console.log(allData.rows);
 
     if (allData.resultTypes[0].includes("2-СТАЕН")) {
-      writeInDB(allData.rows, "three_room_data");
+      await writeInDB(allData.rows, "three_room_data");
     } else {
-      writeInDB(allData.rows, "three_room_data");
+      await writeInDB(allData.rows, "three_room_data");
     }
 
     const getRecordsForToday = async () => {
