@@ -251,13 +251,13 @@ export async function GET() {
     if (allData.resultTypes[0].includes("2-СТАЕН")) {
       writeInDB(allData.rows, "two_room_data");
     } else {
-      writeInDB(allData.rows, "three_room_data");
+      writeInDB(allData.rows, "two_room_data");
     }
 
     const getRecordsForToday = async () => {
       const todayDate = moment().format("YYYY-MM-DD");
       const records = await db
-        .selectFrom("two_room_data")
+        .selectFrom("three_room_data")
         .selectAll()
         // @ts-expect-error its ok
         .where(sql`DATE("date") = ${todayDate}`)
@@ -305,8 +305,8 @@ export async function GET() {
     const tableHTML = generateTableHTML(todayRecords);
     const mailOptions = {
       from: '"Imot Scraper" <yoan.emilov@gmail.com>', // Sender address
-      to: "yoan.nedelchev@yahoo.com", // Receiver address
-      subject: "Cron Job Completed", // Subject
+      to: process.env.receiverAddress, // Receiver address
+      subject: "Нови обяви 2-стаен, гр. София", // Subject
       text: "This chron job has completed", // Plain text body
       html: `${tableHTML}`, // HTML body
     };
