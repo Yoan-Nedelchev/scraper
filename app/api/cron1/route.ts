@@ -95,14 +95,6 @@ export async function GET() {
     },
   });
 
-  const mailOptions = {
-    from: process.env.senderAddress,
-    to: process.env.receiverAddress,
-    subject: "Cron Job Completed",
-    text: "This chron job has completed",
-    html: "<h1>hello</h1>",
-  };
-
   let counter = 1;
   const lastEqualsIndex = url.lastIndexOf("=");
 
@@ -260,6 +252,59 @@ export async function GET() {
     } else {
       writeInDB(allData.rows, "three_room_data");
     }
+
+    const getRecordsForToday = async () => {
+      const todayDate = moment().add(1, "days").format("YYYY-MM-DD");
+      const records = await db
+        .selectFrom("three_room_data")
+        .selectAll()
+        // @ts-expect-error its ok
+        .where(sql`DATE("date") = ${todayDate}`)
+        .execute();
+      console.log("newRecords", records);
+      return records;
+    };
+
+    const todayRecords = await getRecordsForToday();
+
+    const generateTableHTML = (todayRecords) => {
+      const tableRows = todayRecords
+        .map((item) => {
+          return `
+          <tr>
+            <td>${item.image}</td>
+            <td>${item.lnk2}</td>
+            <td>${item.price} €</td>
+            <td>${item.data}</td>
+          </tr>
+        `;
+        })
+        .join("");
+      return `
+        <table border="1" cellpadding="10" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Снимка</th>
+              <th>Локация</th>
+              <th>Цена</th>
+              <th>Описание</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      `;
+    };
+
+    const tableHTML = generateTableHTML(todayRecords);
+    const mailOptions = {
+      from: '"Imot Scraper" <yoan.emilov@gmail.com>', // Sender address
+      to: "yoan.nedelchev@yahoo.com", // Receiver address
+      subject: "Cron Job Completed", // Subject
+      text: "This chron job has completed", // Plain text body
+      html: `${tableHTML}`, // HTML body
+    };
 
     try {
       // Send email
