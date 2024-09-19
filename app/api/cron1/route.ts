@@ -306,7 +306,7 @@ export async function GET() {
     const mailOptions = {
       from: '"Imot Scraper" <yoan.emilov@gmail.com>', // Sender address
       to: "yoan.nedelchev@yahoo.com", // Receiver address
-      subject: "Cron Job Completed", // Subject
+      subject: "Нови обяви 3-стаен, гр. София", // Subject
       text: "This chron job has completed", // Plain text body
       html: `${tableHTML}`, // HTML body
     };
