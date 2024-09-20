@@ -25,12 +25,32 @@ type Table = "two_room_data" | "three_room_data";
 
 const db = createKysely<Database>();
 
+const getRowCount = async () => {
+  const { rowCount } = await db
+    .selectFrom("three_room_data") // Replace 'table_name' with your actual table name
+    .select(sql`count(*)`.as("rowCount"))
+    .executeTakeFirst();
+  return rowCount;
+};
+
 const writeInDB = async (rows: RoomData[], table: Table) => {
   await db
     .insertInto(table)
     .values(rows)
     .onConflict((oc) => oc.columns(["data", "price"]).doNothing())
     .execute();
+};
+
+const getRecordsForToday = async () => {
+  const todayDate = moment().format("YYYY-MM-DD");
+  const records = await db
+    .selectFrom("three_room_data")
+    .selectAll()
+    // @ts-expect-error its ok
+    .where(sql`DATE("date") = ${todayDate}`)
+    .execute();
+  console.log("newRecords", records);
+  return records;
 };
 
 const SUBWAY_ARRAY = [
@@ -248,25 +268,21 @@ export async function GET() {
     await fetchData();
     console.log(allData.rows);
 
+    const initialRowCount = await getRowCount();
+
     if (allData.resultTypes[0].includes("2-СТАЕН")) {
       await writeInDB(allData.rows, "three_room_data");
     } else {
       await writeInDB(allData.rows, "three_room_data");
     }
 
-    const getRecordsForToday = async () => {
-      const todayDate = moment().format("YYYY-MM-DD");
-      const records = await db
-        .selectFrom("three_room_data")
-        .selectAll()
-        // @ts-expect-error its ok
-        .where(sql`DATE("date") = ${todayDate}`)
-        .execute();
-      console.log("newRecords", records);
-      return records;
-    };
+    const finalRowCount = await getRowCount();
+
+    // @ts-expect-error counts will alwaybs ne numbers
+    const differenceRowCount = finalRowCount - initialRowCount;
 
     const todayRecords = await getRecordsForToday();
+    const countTodayRecords = todayRecords.length;
 
     const generateTableHTML = (todayRecords) => {
       if (todayRecords.length > 0) {
@@ -302,7 +318,11 @@ export async function GET() {
       }
     };
 
-    const tableHTML = generateTableHTML(todayRecords);
+    const tableHTML =
+      ` <p>
+          Нови обяви в този имейл: ${differenceRowCount}<br>
+          Общо обяви за деня: ${countTodayRecords}
+        </p>` + generateTableHTML(todayRecords);
     const mailOptions = {
       from: '"Imot Scraper" <yoan.emilov@gmail.com>', // Sender address
       to: process.env.receiverAddress, // Receiver address
