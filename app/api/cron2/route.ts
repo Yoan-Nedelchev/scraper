@@ -268,6 +268,8 @@ export async function GET() {
     await fetchData();
     console.log(allData.rows);
 
+    const initialRowCount = await getRowCount();
+
     if (allData.resultTypes[0].includes("2-СТАЕН")) {
       await writeInDB(allData.rows, "two_room_data");
     } else {
