@@ -291,11 +291,17 @@ export async function GET() {
           .map((item) => {
             return `
           <tr>
-            <td>${item.image}</td>
-            <td>${item.price_change ? item.price_change : "нов"}</td>
-            <td>${item.lnk2}</td>
-            <td>${item.price} €</td>
-            <td>${item.data}</td>
+          <td>${item.image}</td>
+          <td>${
+            item.price_change
+              ? item.price_change === "rise"
+                ? "увеличен"
+                : "намален"
+              : "нов"
+          }</td>            
+          <td>${item.lnk2}</td>
+          <td>${item.price} €</td>
+          <td>${item.data}</td>
           </tr>
         `;
           })
