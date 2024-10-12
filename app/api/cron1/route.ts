@@ -39,6 +39,8 @@ const writeInDB = async (rows: RoomData[], table: Table) => {
     .values(rows)
     .onConflict((oc) => oc.columns(["data", "price"]).doNothing())
     .execute();
+
+  await sql`CALL update_price_changes_for_today_three_room()`.execute(db);
 };
 
 const getRecordsForToday = async () => {
@@ -335,7 +337,6 @@ export async function GET() {
       // Send email
       const info = await transporter.sendMail(mailOptions);
       console.log("Email sent: %s", info.messageId);
-
       console.log({ message: "Email sent successfully!" });
     } catch (error) {
       console.error("Error sending email:", error);

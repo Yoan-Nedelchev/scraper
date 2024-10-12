@@ -39,6 +39,7 @@ const writeInDB = async (rows: RoomData[], table: Table) => {
     .values(rows)
     .onConflict((oc) => oc.columns(["data", "price"]).doNothing())
     .execute();
+  await sql`CALL update_price_changes_for_today_two_room()`.execute(db);
 };
 
 const getRecordsForToday = async () => {
