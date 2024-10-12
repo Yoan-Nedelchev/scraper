@@ -292,7 +292,7 @@ export async function GET() {
             return `
           <tr>
             <td>${item.image}</td>
-            <td>${item.price_increase ? item.price_increase : "нов"}</td>
+            <td>${item.price_increase ? item.price_change : "нов"}</td>
             <td>${item.lnk2}</td>
             <td>${item.price} €</td>
             <td>${item.data}</td>
