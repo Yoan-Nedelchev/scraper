@@ -39,6 +39,7 @@ const writeInDB = async (rows: RoomData[], table: Table) => {
     .values(rows)
     .onConflict((oc) => oc.columns(["data", "price"]).doNothing())
     .execute();
+
   await sql`CALL update_price_changes_for_today_two_room()`.execute(db);
 };
 
@@ -270,7 +271,12 @@ export async function GET() {
     console.log(allData.rows);
 
     const initialRowCount = await getRowCount();
-    await writeInDB(allData.rows, "two_room_data");
+
+    if (allData.resultTypes[0].includes("2-СТАЕН")) {
+      await writeInDB(allData.rows, "two_room_data");
+    } else {
+      await writeInDB(allData.rows, "two_room_data");
+    }
 
     const finalRowCount = await getRowCount();
 
@@ -286,17 +292,17 @@ export async function GET() {
           .map((item) => {
             return `
           <tr>
-          <td>${item.image}</td>
-          <td>${
-            item.price_change
-              ? item.price_change === "rise"
-                ? "увеличен"
-                : "намален"
-              : "нов"
-          }</td>            
-          <td>${item.lnk2}</td>
-          <td>${item.price} €</td>
-          <td>${item.data}</td>
+            <td>${item.image}</td>
+            <td>${
+              item.price_change
+                ? item.price_change === "rise"
+                  ? "увеличен"
+                  : "намален"
+                : "нов"
+            }</td>
+            <td>${item.lnk2}</td>
+            <td>${item.price} €</td>
+            <td>${item.data}</td>
           </tr>
         `;
           })
@@ -323,10 +329,10 @@ export async function GET() {
     };
 
     const tableHTML =
-      `<p>
+      ` <p>
           Нови обяви в този имейл: ${differenceRowCount}<br>
           Общо обяви за деня: ${countTodayRecords}
-      </p>` + generateTableHTML(todayRecords);
+        </p>` + generateTableHTML(todayRecords);
     const mailOptions = {
       from: '"Imot Scraper" <yoan.emilov@gmail.com>', // Sender address
       to: process.env.receiverAddress, // Receiver address
@@ -339,7 +345,6 @@ export async function GET() {
       // Send email
       const info = await transporter.sendMail(mailOptions);
       console.log("Email sent: %s", info.messageId);
-
       console.log({ message: "Email sent successfully!" });
     } catch (error) {
       console.error("Error sending email:", error);
