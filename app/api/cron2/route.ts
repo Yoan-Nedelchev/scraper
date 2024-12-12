@@ -234,6 +234,7 @@ export async function GET() {
     };
 
     const fetchData = async () => {
+      console.log("237");
       while (true) {
         const pageUrl = `${baseUrl}=${currentPage}`;
         const pageData = await fetchPage(pageUrl);
@@ -270,7 +271,7 @@ export async function GET() {
     console.log(allData.rows);
 
     const initialRowCount = await getRowCount();
-
+    console.log("274");
     if (allData.resultTypes[0].includes("2-СТАЕН")) {
       await writeInDB(allData.rows, "two_room_data");
     } else {
