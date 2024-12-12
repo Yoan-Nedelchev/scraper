@@ -34,13 +34,21 @@ const getRowCount = async () => {
 };
 
 const writeInDB = async (rows: RoomData[], table: Table) => {
-  await db
-    .insertInto(table)
-    .values(rows)
-    .onConflict((oc) => oc.columns(["data", "price"]).doNothing())
-    .execute();
+  try {
+    console.log("Writing to DB:", { rows, table });
+    await db
+      .insertInto(table)
+      .values(rows)
+      .onConflict((oc) => oc.columns(["data", "price"]).doNothing())
+      .execute();
 
-  await sql`CALL update_price_changes_for_today_two_room()`.execute(db);
+    console.log("Rows inserted successfully.");
+
+    await sql`CALL update_price_changes_for_today_two_room()`.execute(db);
+    console.log("Stored procedure executed successfully.");
+  } catch (error) {
+    console.error("Error in writeInDB:", error);
+  }
 };
 
 const getRecordsForToday = async () => {
