@@ -268,7 +268,7 @@ export async function GET() {
     };
 
     await fetchData();
-    console.log(allData.rows);
+    console.log("allrows", allData.rows);
 
     const initialRowCount = await getRowCount();
 
