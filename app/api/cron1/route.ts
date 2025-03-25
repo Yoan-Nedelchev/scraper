@@ -245,7 +245,8 @@ export async function GET() {
           lnk2: pageData.lnk2Html[index],
           data: pageData.additionalDataHtml[index],
           price: price,
-          subway: SUBWAY_ARRAY.some((subwayItem) =>
+          subway: 
+            // SUBWAY_ARRAY.some((subwayItem) =>
           //   pageData.lnk2Html[index]
           //     .toLowerCase()
           //     .includes(subwayItem.toLowerCase())
