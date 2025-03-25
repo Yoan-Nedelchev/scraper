@@ -246,12 +246,13 @@ export async function GET() {
           data: pageData.additionalDataHtml[index],
           price: price,
           subway: SUBWAY_ARRAY.some((subwayItem) =>
-            pageData.lnk2Html[index]
-              .toLowerCase()
-              .includes(subwayItem.toLowerCase())
-          )
-            ? "да"
-            : "провери",
+          //   pageData.lnk2Html[index]
+          //     .toLowerCase()
+          //     .includes(subwayItem.toLowerCase())
+          // )
+          //   ? "да"
+          //   : 
+            "провери",
         }));
         allData.rows.push(...rows);
         if (currentPage >= parseInt(pageData.numberOfPages)) break;
