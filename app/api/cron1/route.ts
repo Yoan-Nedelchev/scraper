@@ -341,6 +341,8 @@ export async function GET() {
       html: `${tableHTML}`, // HTML body
     };
 
+    console.log(tableHTML)
+
     try {
       // Send email
       const info = await transporter.sendMail(mailOptions);
